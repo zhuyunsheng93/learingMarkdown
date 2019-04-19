@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="49bdd9c6-b99b-4607-af3f-c951d7b74012" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/5.Tools/Git/dailywork.md" beforeDir="false" afterPath="$PROJECT_DIR$/5.Tools/Git/dailywork.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -37,19 +37,19 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/5.Tools/Git/dailywork.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="25">
-                <caret line="1" selection-start-line="1" selection-end-line="1" />
+              <first_editor relative-caret-position="525">
+                <caret line="21" column="6" lean-forward="true" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
               </first_editor>
               <second_editor />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/1.Base/algorithm/test">
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
@@ -64,11 +64,12 @@
       <list>
         <option value="$PROJECT_DIR$/1.Base/algorithm/test.md" />
         <option value="$PROJECT_DIR$/1.Base/Design-pattern/design-pattern.md" />
+        <option value="$PROJECT_DIR$/1.Base/algorithm/test" />
         <option value="$PROJECT_DIR$/5.Tools/Git/dailywork.md" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="777" />
     <option name="y" value="107" />
     <option name="width" value="1031" />
@@ -96,12 +97,6 @@
             <path>
               <item name="learningMarkdown" type="b2602c69:ProjectViewProjectNode" />
               <item name="learningMarkdown" type="462c0819:PsiDirectoryNode" />
-              <item name="1.Base" type="462c0819:PsiDirectoryNode" />
-              <item name="algorithm" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="learningMarkdown" type="b2602c69:ProjectViewProjectNode" />
-              <item name="learningMarkdown" type="462c0819:PsiDirectoryNode" />
               <item name="5.Tools" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -118,6 +113,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/learingMarkdown" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
   </component>
@@ -151,17 +147,18 @@
       <updated>1555551987369</updated>
       <workItem from="1555551988770" duration="3925000" />
       <workItem from="1555583610644" duration="4342000" />
-      <workItem from="1555636220991" duration="5236000" />
+      <workItem from="1555636220991" duration="8525000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13503000" />
+    <option name="totallyTimeSpent" value="16792000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="777" y="107" width="1031" height="643" extended-state="0" />
+    <frame x="0" y="28" width="1920" height="1052" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27507448" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.019514767" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -173,7 +170,7 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Terminal" order="9" visible="true" weight="0.27626458" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="9" visible="true" weight="0.10400867" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -212,18 +209,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/1.Base/algorithm/test">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/5.Tools/Git/dailywork.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="25">
-            <caret line="1" selection-start-line="1" selection-end-line="1" />
+          <first_editor relative-caret-position="525">
+            <caret line="21" column="6" lean-forward="true" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
           </first_editor>
           <second_editor />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/1.Base/algorithm/test">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
 </project>
