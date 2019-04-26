@@ -54,7 +54,7 @@
                       iUserDao.loginUser();
                    }
                }
-               ```
+          ```
      2. 通过setter方法传递依赖对象
         ```angular2html
                public class UserService implement IUserService{
@@ -66,7 +66,7 @@
                            iUserDao.loginUser();
                         }
                     }
-               ```
+         ```
       3. 接口依赖
          ```angular2html
               
