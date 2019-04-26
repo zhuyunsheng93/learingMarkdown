@@ -44,7 +44,7 @@
    * 抽象不应该依赖于细节,细节应该依赖于抽象 换言之就是尽量地采用接口编程(减少对象之间的耦合，在进行业务增加，变更时，极大程度上减少代码的修改量。)
    * 三种依赖关系（依赖注入:当一个对象要与其他对象发生依赖关系，通过`抽象`来注入多依赖地对象）： 
       1. 构造函数传递依赖对象
-          ```angular2html
+          ```java
                public class UserService implement IUserService{
                    private IUserDao iUserDao ;
                    public UserService(IUserDao iUserDao){
@@ -56,7 +56,7 @@
                }
           ```
      2. 通过setter方法传递依赖对象
-        ```angular2html
+        ```java
                public class UserService implement IUserService{
                         private IUserDao iUserDao ;
                         public setIUserDao(IUserDao iUserDao){
@@ -68,7 +68,7 @@
                     }
          ```
       3. 接口依赖
-         ```angular2html
+         ```java
               
          ```
 * 接口隔离原则
