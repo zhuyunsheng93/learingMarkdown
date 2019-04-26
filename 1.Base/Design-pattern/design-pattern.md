@@ -1,41 +1,11 @@
 # 七种面向对象设计原则
 ## 单一职责原则
- 
-     一个类只负责一个功能域中的相应职责（不能将一个类的功能太过庞大，导致复用性不高）
+ 一个类只负责一个功能域中的相应职责（不能将一个类的功能太过庞大，导致复用性不高）
 ## 开闭原则
-
    软件实体应对扩展开放，而对修改关闭（随着时间的推移，原有的需求可能会进行改变，在面对新增的需求时，符合开闭规则的应用程序，可以很轻松的进行扩展，而无需修改现有的代码）
    实现开闭原则的关键就是抽象化。
 ## 里氏代换原则
-
    所用引用基类对象的地方能够透明的使用其子类对象
-   
-   ```java
-     public interface Father{
-       public saySomething();
-     }
-     public class BigSon implement Father{
-       public saySomething(){
-        System.out.println("bigSon");
-       }
-     }
-     public class SecondSon implement Father{
-       public saySomething(){
-       System.out.println("secondSon");
-       }
-     }
-     public class Test{
-       public static void test(Father father){
-          father.saySomething();
-       }
-       public static void main (String[] arg){
-          Father bigSon = new BigSon();
-          Father secondSon = new SecondSon();
-          test(bigSon);//这个就是里氏代换
-          test(secondSon);
-       }
-     }
-  ```
   * 使用注意点
      1. 子类的方法必须在父类中声明、或者说子类必须实现父类中的所有方法。
      2. 运用里氏代换原则时，尽量把父类设计为抽象或者接口，并让子类进行继承，并实现在父类中声明的方法，运行时子实例替换父实例。而无需进行源码的修改。
@@ -57,7 +27,6 @@
            }
           ```
      2. 通过setter方法传递依赖对象
-     
         ```java
          public class UserService implement IUserService{
             private IUserDao iUserDao ;
