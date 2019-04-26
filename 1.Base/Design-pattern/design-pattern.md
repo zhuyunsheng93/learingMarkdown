@@ -45,27 +45,27 @@
    * 三种依赖关系（依赖注入:当一个对象要与其他对象发生依赖关系，通过`抽象`来注入多依赖地对象）： 
       1. 构造函数传递依赖对象
           ```java
-               public class UserService implement IUserService{
-                   private IUserDao iUserDao ;
-                   public UserService(IUserDao iUserDao){
-                      this.iUserDao = iUserDao;
-                   }
-                   public void LoginUser(){
-                      iUserDao.loginUser();
-                   }
-               }
+           public class UserService implement IUserService{
+              private IUserDao iUserDao ;
+              public UserService(IUserDao iUserDao){
+                 this.iUserDao = iUserDao;
+              }
+              public void LoginUser(){
+                 iUserDao.loginUser();
+              }
+           }
           ```
      2. 通过setter方法传递依赖对象
         ```java
-               public class UserService implement IUserService{
-                        private IUserDao iUserDao ;
-                        public setIUserDao(IUserDao iUserDao){
-                           this.iUserDao = iUserDao;
-                        }
-                        public void LoginUser(){
-                           iUserDao.loginUser();
-                        }
-                    }
+         public class UserService implement IUserService{
+            private IUserDao iUserDao ;
+            public setIUserDao(IUserDao iUserDao){
+               this.iUserDao = iUserDao;
+            }
+            public void LoginUser(){
+               iUserDao.loginUser();
+            }
+         }
          ```
       3. 接口依赖
          ```java
