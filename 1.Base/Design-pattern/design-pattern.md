@@ -61,7 +61,7 @@
   * 工厂三兄弟之简单工厂模式(二)
   * 工厂三兄弟之简单工厂模式(三)
   * 工厂三兄弟之简单工厂模式(四)
- <img src="./pic/simplefactory.JPG" width="200" height="100" align="center"/>
+ <img src="./pic/simplefactory.JPG"  align=center/>
   ## 工厂方法模式-Factory Method Pattern
   * 工厂三兄弟之工厂方法模式(一)
   * 工厂三兄弟之工厂方法模式(二)
