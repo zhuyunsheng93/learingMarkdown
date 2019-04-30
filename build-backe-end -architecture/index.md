@@ -1,0 +1,29 @@
+# 搭建一个springboot后台架构
+## 分析
+* 系统包含功能
+         1. 权限控制
+         2. 地址拦截
+         3. 缓存
+         4. 日志存数据库,和本地
+         5. 定时器
+         6. 邮件发送
+         7. 双向通讯
+         8. 单点登陆
+         9. 消息队列
+         10. 搜索技术
+         11. 文件上传
+         12. 负载均衡
+         13. 下载文件
+         14. 文件导出、导入
+* 对应所需要的技术
+          1. shiro
+          2. interceptor
+          3. kafka Encache
+          4. mongodb
+          5. quartz
+          6. mail
+          7. webscoket
+          8. elasticsearch
+          9. uploadfile
+          10. inport file,expot file
+          11. Nginx
