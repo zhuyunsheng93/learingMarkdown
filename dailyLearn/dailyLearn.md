@@ -83,3 +83,44 @@ spring.datasource.druid.test-on-borrow=true
 #监控页面启动
 spring.datasource.druid.stat-view-servlet.allow=true
 ```
+## Model ModelAndView ModelMap 前台绑定数据
+- Model
+>  1、每一次的请求可以自动创建  
+   2、Model只是用来传输数据，并不会进行业务寻址。  
+   3、接收各种数据，但是来接收一组数据List 这时Model实际上是ModelMap。
+```java
+//通过form提交上来的，直接controller同名参数拿到
+ @PostMapping("/login")
+  public String login(Model model,String userName,String password){
+    System.out.println(password);
+    model.addAttribute("userName",userName);
+    return "index";
+  }
+```
+- ModelAndView
+>1、 自行进行创建。  
+ 2、 可以通过setViewName("xxx"),进行寻址。  
+ 3、函数的返回类型为ModelAndView。
+ ```java
+  @GetMapping("/modelandview")
+   public ModelAndView all(){
+     List<User> userList = userService.queryAll();
+     ModelAndView mav = new ModelAndView();
+     mav.addObject("users",userList);
+     mav.setViewName("users");
+     return mav;
+   }
+ ```
+- ModelMap
+> 1、Spring框架自动创建ModelMap实例，并作为controller方法的参数传入，用户无需自行创建。  
+  2、ModelMap对象主要用于传递控制方法处理数据到结果页面。
+  ```java
+   @GetMapping("/all")
+    public String all(ModelMap model) {
+      List<User> userList = userService.queryAll();
+      model.addAttribute("users",userList);
+      return "users";
+    }
+  ```  
+
+  
