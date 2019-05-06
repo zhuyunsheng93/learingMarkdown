@@ -31,3 +31,30 @@
   
   经常做法是放在 `classpath:/static/`目录下
 ## 添加拦截器
+#2019-05-06
+## Mybatis知识
+- `@MapperScan` 注解在启动类，创建的Mapper文件就可以不用添加`@Mapper`注解来进行bean在spring中的注册。
+```java
+@SpringBootApplication
+@MapperScan("com.springboot.demo.mapper")
+  public class DemoApplication {
+    public static void main(String[] args) {
+      SpringApplication.run(DemoApplication.class, args);
+    }
+  }
+```
+- 在application.properties中配置
+```properties
+#mybatis 别名扫描
+mybatis.type-aliases-package=com.springboot.demo.pojo
+#mapper.xml文件位置，如果没有映射文件，就注释掉
+mybatis.mapper-locations=classpath:mappers/*.xml
+```
+- druid连接池连接mysql时区错误
+```sql
+show variables like '%time_zone%';
+set global time_zone='+8:00';
+```
+## SpringBoot连接池
+- 默认在引入jdbc启动器时就会添加一个Hikari连接池
+ ![1525514424562](assets/1525514424562.png)
