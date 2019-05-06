@@ -58,3 +58,28 @@ set global time_zone='+8:00';
 ## SpringBoot连接池
 - 默认在引入jdbc启动器时就会添加一个Hikari连接池
  ![1525514424562](assets/1525514424562.png)
+- 当在application.properties配置其他连接池时就会将这个默认的给覆盖掉，不启用。
+```properties
+# 连接四大参数
+spring.datasource.url=jdbc:mysql://localhost:3306/heima
+spring.datasource.username=root
+spring.datasource.password=123
+# 可省略，SpringBoot自动推断
+spring.datasource.driverClassName=com.mysql.jdbc.Driver
+#Hikari配置
+spring.datasource.hikari.idle-timeout=60000
+spring.datasource.hikari.maximum-pool-size=30
+spring.datasource.hikari.minimum-idle=10
+###########################################
+#druid
+#初始化连接数
+spring.datasource.druid.initial-size=1
+#最小空闲连接
+spring.datasource.druid.min-idle=1
+#最大活动连接
+spring.datasource.druid.max-active=20
+#获取连接时测试是否可用
+spring.datasource.druid.test-on-borrow=true
+#监控页面启动
+spring.datasource.druid.stat-view-servlet.allow=true
+```
