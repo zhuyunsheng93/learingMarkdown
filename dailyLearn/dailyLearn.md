@@ -89,7 +89,7 @@ spring.datasource.druid.stat-view-servlet.allow=true
    2、Model只是用来传输数据，并不会进行业务寻址。  
    3、接收各种数据，但是来接收一组数据List 这时Model实际上是ModelMap。
 ```java
-//通过form提交上来的，直接controller同名参数拿到
+//通过form提交上来的，直接controller同名参数获取提交上来的值
  @PostMapping("/login")
   public String login(Model model,String userName,String password){
     System.out.println(password);
