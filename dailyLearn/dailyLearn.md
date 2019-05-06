@@ -31,7 +31,7 @@
   
   经常做法是放在 `classpath:/static/`目录下
 ## 添加拦截器
-#2019-05-06
+# 2019-05-06
 ## Mybatis知识
 - `@MapperScan` 注解在启动类，创建的Mapper文件就可以不用添加`@Mapper`注解来进行bean在spring中的注册。
 ```java
