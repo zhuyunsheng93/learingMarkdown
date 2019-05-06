@@ -122,5 +122,8 @@ spring.datasource.druid.stat-view-servlet.allow=true
       return "users";
     }
   ```  
-
-  
+## PostMapping和GetMapping
+  在上面的中我们看到什么PostMapping和GetMapping，是什么意思呢。
+  - `PostMapping` 等价于 `@RequestMapping(method = RequestMethod.POST)`
+  - `GetMapping`等价于 `@RequestMapping(method = RequestMethod.GET)`
+  - 剩下的，应该知道规律吧。
