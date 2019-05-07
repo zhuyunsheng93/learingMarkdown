@@ -30,3 +30,10 @@
 # 添加.gitignore后.idea文件夹下文件还能被追踪
 * 原因是因为，在上传项目的时候就已经被追踪，后续虽添加.gitignore后，但是还是被追踪
 * 解决办法  `git rm -r --cached .idea`清除.idea的git缓存
+# 创建分支
+- 本地创建分支，推送到服务器  
+`git checkout -b 分支名`  
+`git push origin 分支名:分支名`
+- 注意点  
+origin 这个是默认远端名称，根据自己的命名来进行选择。
+
