@@ -34,6 +34,9 @@
 - 本地创建分支，推送到服务器  
 `git checkout -b 分支名`  
 `git push origin 分支名:分支名`
+- 删除分支  
+`git push origin :分支名` 前面的为空就是删除。
+`git push origin --delete 分支名`
 - 注意点  
 origin 这个是默认远端名称，根据自己的命名来进行选择。
 
