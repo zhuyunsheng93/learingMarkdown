@@ -1,7 +1,9 @@
 # 如何将本地的git推送到远端
 ## 本地存在项目 推送到远端
 1. 注册github账号
-2. 在本机生成SSH Key
+2. 在本机生成SSH Key  
+ git config --global user.email "you@example.com"  
+ git config --global user.name "Your Name"
 
    ssh-keygen -t rsa -C "youremail@example.com"
 3. 在本机中找到id_rsa.pub 中的SSH Key添加到自己的github中
