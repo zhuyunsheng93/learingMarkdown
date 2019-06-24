@@ -40,5 +40,29 @@
 `git push origin :分支名` 前面的为空就是删除。
 `git push origin --delete 分支名`
 - 注意点  
-origin 这个是默认远端名称，根据自己的命名来进行选择。
+origin
+ 这个是默认远端名称，根据自己的命名来进行选择。
+- 本地的分支未建立追踪关系  
+  `git branch --set-upstream-to=origin/<branch> 201907-dev`
+  
+# 提交到错误的分支上  
+- 查看提交记录  
+  `git reflog`
+- 将HEAD指针指向自己提交过的的前一版  
+  `git reset --hard 版本号`
+- 回退后，强行提交  
+  `git push -f`  
+  操作完上述，远端的版本的就会退到没提交的时候。这时候使用`git status` 可能会产生`working tree is clean`的提示。
+ - 本地commit后回退上一版  
+ `git reset HEAD~`
+ - 这时使用`git status` 查看，发现提交的回来了，
+ - 将需要提交的改动隐藏  
+ `git stash`
+ - 切换分支  
+ `git checkout 分支名称`
+ - 将隐藏的改动现实出来  
+ `git statsh pop` 这回将隐藏的内容删除。
+ 
+
+
 
