@@ -127,3 +127,5 @@ spring.datasource.druid.stat-view-servlet.allow=true
   - `PostMapping` 等价于 `@RequestMapping(method = RequestMethod.POST)`
   - `GetMapping`等价于 `@RequestMapping(method = RequestMethod.GET)`
   - 剩下的，应该知道规律吧。
+## Mysql出现SSL连接问题
+这是因为高版本Mysql的问题，需要在连接方式中 添加`?useSSL=false`
