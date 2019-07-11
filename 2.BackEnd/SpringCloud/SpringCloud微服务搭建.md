@@ -65,8 +65,8 @@ eureka:
         </dependencies>
       </dependencyManagement>
 ```
-2、服务端application.yml
-```yml
+2、erureka-client 的application.yml
+```yaml
 server:
   port: 8081
 spring:
@@ -91,5 +91,31 @@ eureka:
 mybatis:
   type-aliases-package: com.leyou.userservicedemo.pojo
 ```
-服务端怎么注册到eureka server中？ 就是靠service-url这个，将eureka server的地址信息，告诉eureka client，服务端就会发送注册信息给服务端
-3、开启客户端功能 在启动类添加 `@EnableDiscoveryClient` `@@EnableEurekaClient`
+服务端怎么注册到eureka server中？ 就是靠service-url这个，将eureka server的地址信息，告诉eureka client，服务端就会发送注册信息给服务端  
+3、开启客户端功能 在启动类添加 `@EnableDiscoveryClient` `@@EnableEurekaClient`  
+#构建服务集群
+多个eureka server之间可以互相注册为服务，当服务提供者注册到eureka server集群中的某个节点，该节点就会同步到其他的server中，访问的任一节点时，得到的都是全部的服务信息。
+## 搭建EurekaServer集群
+1、搭建有两个eureka server的集群，端口分别为10086和10087
+* 修改原EurekaServer的配置：
+```yml
+server:
+  port: 10086 # 端口
+spring:
+  application:
+    name: eureka-server # 应用名称，会在Eureka中显示
+eureka:
+  client:
+    service-url: # 配置其他Eureka服务的地址，而不是自己，比如10087
+      defaultZone: http://127.0.0.1:10087/eureka
+```
+`注意:所谓高可用注册中心，其实就是把EurekaServer自己作为一个服务进行注册，故：`
+* register-with-eureka: true   fetch-registry: true 都要添加上。
+* 把service-url的值改成另外一台EurekaServer的地址。而不是自己。这样就把自己注册到另一个Eureka-server中。
+## 服务提供者配置修改
+  ```yaml
+eureka:
+  client:
+    service-url: # EurekaServer地址,多个地址以','隔开
+      defaultZone: http://127.0.0.1:10086/eureka,http://127.0.0.1:10087/eureka
+```

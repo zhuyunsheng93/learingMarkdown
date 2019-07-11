@@ -129,3 +129,6 @@ spring.datasource.druid.stat-view-servlet.allow=true
   - 剩下的，应该知道规律吧。
 ## Mysql出现SSL连接问题
 这是因为高版本Mysql的问题，需要在连接方式中 添加`?useSSL=false`
+## Mysql中出现时区问题
+在application.yml配置文件中的数据库链接地址后添加serverTimezone=UTC就可以解决报错
+## idea 一个应用，启动多次
