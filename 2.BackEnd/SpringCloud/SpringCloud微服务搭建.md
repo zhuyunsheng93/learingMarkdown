@@ -219,7 +219,7 @@ eureka:
  * 重试机制
   eureka的服务治理强调CAP中的AP，即可用性和可靠性，它与Zookeeper这一类强调CP(一致性，可靠性)的服务治理框架，最大的区别在于，eureka为了更高的服务可用性，牺牲了一定的一致性，极端情况下，宁愿接收故障的实例也不愿丢失健康实例，如自我保护机制
   解决方案：  
-  1、使用spring-retry 来增强RestTemplate的重试能力，当一次服务调用失败后，不是抛出错误，而是再次重试另一个服务。配置如下：
+  1、使用spring-retry 来增强RestTemplate的重试能力，当一次服务调用失败后，不是抛出错误，而是再次重试另一个服务。配置如下（user-service指的是需要远程调用的服务名）：
   ```ymal
   spring:
     cloud:
@@ -307,4 +307,33 @@ public class UserService {
 ```
  * 启动类改造，添加`@EnableCircuitBreaker`注解 
  * 优化   
- 1、熔断实现了，但是重试机制，没有生效
+ 1、熔断实现了，但是重试机制，没有生效,这是因为 Hystrix设置的熔断时间和Ribbon设置的时间相同，先触发了熔断。
+ #Feign
+ 在前面的学习中，我们使用负载均衡，大大简化了远程调时的代码
+ ```java
+ String baseUrl = "http://user-service-demo/user/"
+ User user = this.resetTemplate.getForObject(baseUrl+id,User.class)
+```
+但是这样会让你在调用服务时，编写大量重复的代码，每次调用都要编写这个，无非一些参数不一样，这时我们就需要Feign。  
+##介绍
+Feign可以把Rest的请求进行隐藏，伪装成类似SpringMVC的Controller一样。你不用再自己拼接url，拼接参数等等操作，一切都交给Feign去做。
+##快速入门
+1、 导入依赖  
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+```
+2、 Feign的客户端  
+```java
+@FeignClient("user-service")
+public interface UserFeignClient {
+
+    @GetMapping("/user/{id}")
+    User queryUserById(@PathVariable("id") Long id);
+}
+```
+* 首先这是一个接口，Feign会通过动态代理，帮我们实现类，这点跟mybaits的mapper很像。
+* @FeignClient 声明这是一个Feign客户端，类似mapper注解，同时通过value属性指定服务名称。
+* 接口中的定义方法，完全采用SpringMvc的注解，Feign会帮助我们生成URL，并访问获取结果。
