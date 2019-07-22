@@ -336,4 +336,126 @@ public interface UserFeignClient {
 ```
 * 首先这是一个接口，Feign会通过动态代理，帮我们实现类，这点跟mybaits的mapper很像。
 * @FeignClient 声明这是一个Feign客户端，类似mapper注解，同时通过value属性指定服务名称。
-* 接口中的定义方法，完全采用SpringMvc的注解，Feign会帮助我们生成URL，并访问获取结果。
+* 接口中的定义方法，完全采用SpringMvc的注解，Feign会帮助我们生成URL，并访问获取结果。  
+3、使用FeignClient进行访问请求。  
+```java 
+  @Service
+  public class UserService {
+  
+      @Autowired
+      private UserFeignClient userFeignClient;
+  
+      public List<User> queryUserByIds(List<Long> ids) {
+          List<User> users = new ArrayList<>();
+          ids.forEach(id -> {
+              // 我们测试多次查询，
+              users.add(this.userFeignClient.queryUserById(id));
+          });
+          return users;
+      }
+  }
+```
+4、开启Feign  
+在启动类上，添加`EnableFeignClients` 开启Feign。这个时候我们就不用RestTemplate了。Feign里面集成了Ribbon  
+
+5、Feign集成负载均衡配置
+* 全局配置  
+ ```yaml
+  ribbon:
+    ConnectTimeout: 250 # 连接超时时间(ms)
+    ReadTimeout: 1000 # 通信超时时间(ms)
+    OkToRetryOnAllOperations: true # 是否对所有操作重试
+    MaxAutoRetriesNextServer: 1 # 同一服务不同实例的重试次数
+    MaxAutoRetries: 1 # 同一实例的重试次数
+```
+* 针对某个服务的特定配置
+```yaml
+user-service:  #这个是服务名称
+  ribbon:
+    ConnectTimeout: 250 # 连接超时时间(ms)
+    ReadTimeout: 1000 # 通信超时时间(ms)
+    OkToRetryOnAllOperations: true # 是否对所有操作重试
+    MaxAutoRetriesNextServer: 1 # 同一服务不同实例的重试次数
+    MaxAutoRetries: 1 # 同一实例的重试次数
+```
+##Feign中集成的Hystrix
+默认情况下是关闭的
+```yaml
+feign:
+  hystrix:
+    enabled: true # 开启Feign的熔断功能
+```
+ 1、设置fallback处理
+ ```java
+ @Component
+ public class UserFeignClientFallback implements UserFeignClient {
+     @Override
+     public User queryUserById(Long id) {
+         User user = new User();
+         user.setId(id);
+         user.setName("用户查询出现异常！");
+         return user;
+     }
+ }
+ ```
+2、在FeignClient指定刚才的实现类  
+```java
+@FeignClient(value = "user-service", fallback = UserFeignClientFallback.class)
+public interface UserFeignClient {
+
+    @GetMapping("/user/{id}")
+    User queryUserById(@PathVariable("id") Long id);
+}
+```
+3、重启测试  
+##请求压缩
+* Feign支持对请求和响应的压缩（GZIP），减少通信过程中的性能损耗。设置如下：
+```yaml
+feign:
+  compression:
+    request:
+      enabled: true # 开启请求压缩
+    response:
+      enabled: true # 开启响应压缩
+```
+* 设置触发压缩的大小下限进行设置  
+```yaml
+feign:
+  compression:
+    request:
+      enabled: true # 开启请求压缩
+      mime-types: text/html,application/xml,application/json # 设置压缩的数据类型
+      min-request-size: 2048 # 设置触发压缩的大小下限
+```
+##日志级别
+1、通过logging.level.xx=debug来设置日志级别，但对Feign客户端来说，不顶用，@FeignClient注解修改的客户端被代理时，会创建新的FeignLogger实例，我们需要额外指定日志级别才可以。  
+* 设置com.leyuou包下的日志级别都为debug
+```yaml
+logging:
+  level:
+    com.leyou: debug
+```
+* 编写配置类，定义日志级别 指定的Level级别时FULL,feign支持四种级别(FULL,BASIC,HEADERS,NONE)
+```java
+@Configuration
+public class FeignConfig {
+    @Bean
+    Logger.Level feignLoggerLevel(){
+        return Logger.Level.FULL;
+    }
+}
+```
+1) NONE：不记录任何日志信息，这是默认值。
+2) BASIC：仅记录请求的方法，URL以及响应状态码和执行时间
+3) HEADERS：在BASIC的基础上，额外记录了请求和响应的头信息
+4) FULL：记录所有请求和响应的明细，包括头信息、请求体、元数据。 
+ 
+* 在FeignClient中指定配置类：
+```java
+@FeignClient(value = "user-service", fallback = UserFeignClientFallback.class, configuration = FeignConfig.class)
+public interface UserFeignClient {
+    @GetMapping("/user/{id}")
+    User queryUserById(@PathVariable("id") Long id);
+}
+```
+#Zuul网关

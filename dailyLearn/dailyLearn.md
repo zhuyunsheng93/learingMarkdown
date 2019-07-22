@@ -132,3 +132,7 @@ spring.datasource.druid.stat-view-servlet.allow=true
 ## Mysql中出现时区问题
 在application.yml配置文件中的数据库链接地址后添加serverTimezone=UTC就可以解决报错
 ## idea 一个应用，启动多次
+## 用户登陆验证方式
+1、登陆成功后，信息保存在session中，  
+2、token  
+3、JWT
