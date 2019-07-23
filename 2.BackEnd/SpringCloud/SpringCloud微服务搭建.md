@@ -459,3 +459,111 @@ public interface UserFeignClient {
 }
 ```
 #Zuul网关
+Zuul能做什么  
+* 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求。  
+* 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图。  
+* 动态路由：动态地将请求路由到不同的后端集群。  
+* 压力测试：逐渐增加指向集群的流量，了解性能。  
+* 负载分配：为每一种负载类型分配对应容量，并弃用超出限定值的请求。  
+* 静态响应处理: 在边缘位置直接建立部分相应，从而避免其转发到内部集群。  
+* 多区域弹性：跨越AWSRegion进行请求路由，旨在实现ELB使用的多样化，以及让系统更加贴近系统的使用者。  
+Zuul的默认客户端  
+Zuul默认的客户端为Apache Http Client,也可以使用RestClient或者okhttp3.OkHttpClient。使用RestClient，`ribbon.restclient.enabled=true` 使用okhttp3.OkHttpClient 设置 `ribbon.okhttp.enabled=true`
+##构建简单zuul
+1) 跟普通的springboot创建一样，引入zuul的依赖。
+2) 编写启动类
+```java
+@SpringBootApplication
+@EnableZuulProxy // 开启Zuul的网关功能
+public class ZuulDemoApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ZuulDemoApplication.class, args);
+	}
+}
+```
+3) 编写配置  
+```yaml
+server:
+  port: 10010 #服务端口
+spring: 
+  application:  
+    name: api-gateway #指定服务名
+```
+4) 编写路由规则  
+```yaml
+zuul:
+  routes:
+    user-service: # 这里是路由id，随意写
+      path: /user-service/** # 这里是映射路径
+      url: http://127.0.0.1:8081 # 映射路径对应的实际url地址
+```
+5) 启动测试
+访问 http://localhost:10010/user-service/user/1。这样就会到指定的服务去获取数据。  
+##面向服务路由
+上面的例子中，我们将路径对应的服务写死了，如果同一服务有多个实例的话，显然不合理，应根据服务的名称，去Eureka注册中心查找，进行动态路由。  
+1) 在上述的基础上，添加Eureka客户端依赖  
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+</dependency>
+```
+2) 开启Eureka客户端发现功能
+```java
+@SpringBootApplication
+@EnableZuulProxy // 开启Zuul的网关功能
+@EnableDiscoveryClient
+public class ZuulDemoApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ZuulDemoApplication.class, args);
+	}
+}
+```
+3) 添加Eureka配置，获取服务信息  
+```yaml
+eureka:
+  client:
+    registry-fetch-interval-seconds: 5 # 获取服务列表的周期：5s
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+```
+4) 修改映射配置，通过服务名称获取  
+```yaml
+zuul:
+  routes:
+    user-service: # 这里是路由id，随意写
+      path: /user-service/** # 这里是映射路径
+      serviceId: user-service # 指定服务名称
+```
+##简化zuul路由配置
+上面的配置中，我们的规则是：
+* zuul.routes.<route>.path=/xxx/**： 来指定映射路径。<route>是自定义的路由名
+* zuul.routes.<route>.serviceId=/user-service：来指定服务名。  
+大多数情况下：<route>路由名往往和服务名称写成一样，因此Zuul就提供了一种简化配置语法 `zuul.routes.<serviceId>=<path>`,上述配置可以简化为：
+```yaml
+zuul:
+  routes:
+    user-service: /user-service/** # 这里是映射路径
+```
+##默认的路由规则
+当服务多的时候，上述的配置还是很繁琐，默认情况下，一切服务的映射路径就是服务名本身。例如服务名称为：user-service,则默认的映射路径就是：/user-service/**
+##路由前缀
+```yaml
+zuul:
+  prefix: /api # 添加路由前缀
+  routes:
+      user-service: # 这里是路由id，随意写
+        path: /user-service/** # 这里是映射路径
+        service-id: user-service # 指定服务名称
+```
+我们通过zuul.prefix=/api来指定了路由的前缀，这样在发起请求时，路径就要以/api开头。  
+
+路径/api/user-service/user/1将会被代理到/user-service/user/1
+
+
+
