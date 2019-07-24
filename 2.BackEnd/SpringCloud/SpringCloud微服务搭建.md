@@ -565,5 +565,19 @@ zuul:
 
 路径/api/user-service/user/1将会被代理到/user-service/user/1
 
+##过滤器ZuulFilter
+ZuulFilter是过滤器的顶级父类，下面是其中定义4个最重要的方法。
+````java
+public abstract ZuulFilter implements IZuulFilter{
+
+    abstract public String filterType();
+
+    abstract public int filterOrder();
+    
+    boolean shouldFilter();// 来自IZuulFilter
+
+    Object run() throws ZuulException;// IZuulFilter
+}
+````
 
 
