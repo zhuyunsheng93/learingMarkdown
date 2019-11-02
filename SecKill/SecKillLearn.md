@@ -95,6 +95,104 @@ public class CodeMsg {
 
 }
 ```
+#JSR3306检验标准
+`检验标准:`就是前台传回的数据，在后台再次进行校验。有validation这个包提供一些常见的检验，如果提供的不满足自己的使用，可以自己进行定义
+
+```xml
+<dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+```
+常见的检验如下图   
+
+ ![参数校验](./assets/参数校验.PNG)
+ 
+##如何自定义检验注解
+* 定义注解
+```java
+@Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+@Retention(RUNTIME)
+@Documented
+@Constraint(validatedBy = {IsMobileValidator.class })
+public @interface  IsMobile {
+	
+	boolean required() default true;
+	
+	String message() default "手机号码格式错误";
+
+	Class<?>[] groups() default { };
+
+	Class<? extends Payload>[] payload() default { };
+}
+在这个定义中，定义了如果检验不通过时的返回信息，检验规则的实现类是IsMobileValidator。
+```
+* 定义检验规则类
+```java
+public class IsMobileValidator implements ConstraintValidator<IsMobile, String> {
+
+	private boolean required = false;
+	
+	public void initialize(IsMobile constraintAnnotation) {
+		required = constraintAnnotation.required();
+	}
+
+	public boolean isValid(String value, ConstraintValidatorContext context) {
+		if(required) {
+			return ValidatorUtil.isMobile(value);//负责具体的检验规则。
+		}else {
+			if(StringUtils.isEmpty(value)) {
+				return true;
+			}else {
+				return ValidatorUtil.isMobile(value);
+			}
+		}
+	}
+}
+```
+* 使用定义的检验注解
+1、在实体类中对应需要检验的属性上添加对应规则的注解
+```java
+public class LoginVo {
+	
+	@NotNull
+	@IsMobile
+	private String mobile;
+	
+	@NotNull
+	@Length(min=32)
+	private String password;
+	
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	@Override
+	public String toString() {
+		return "LoginVo [mobile=" + mobile + ", password=" + password + "]";
+	}
+}
+
+``` 
+2、在controller对应的方法上使用@Valid注解,当这个对象的属性值不满足检验规则，就会将message的值返回给浏览器。
+ ```java
+     @RequestMapping("/do_login")
+           @ResponseBody
+           public Result<String> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
+           	log.info(loginVo.toString());
+           	//登录
+           	String token = userService.login(response, loginVo);
+           	return Result.success(token);
+           }
+ ``` 
 #Redis
 ##Redis在liunx的安装
 
@@ -124,12 +222,11 @@ jerry 123456
 ```
 2、jmeter引入
 
-<img src="./assets/应用参数文件.png" style="zoom:70%" />
+![应用参数文件](assets/应用参数文件.png)
 
 3、测试引入变量
 
-<img src="./assets/使用参数.png" style="zoom:70%" />
-
+![使用参数](assets/使用参数.png)
 ##在linux上进行压测
  1、在windows上将压测文件jmx准备好，并让其上传到linux服务器上。
  
@@ -238,4 +335,74 @@ spring.rabbitmq.template.retry.multiplier=1.0
 ```
 ##创建发送者
 ##创建消费者
+##远程连接rabbitmq被拒绝的解决方式（如果没有就自行创建）
+```text
+修改rabbitmq的配置/usr/local/rabbitmq/etc/rabbitmq/rabbitmq.config
+添加：[{rabbit, [{loopback_users, []}]}].
+```
+
 ##四种交换机（交换方式）
+* direct模式 
+一个对一个
+* topic（可以发给多个，但是需要key来来进行辨别接收）
+
+* fanout（广播模式，分发给多个没有key的限制）
+ 可以发给多个queue
+ * header（key，value模式）
+ 
+ ##接口地址隐藏
+ * 开始秒杀之前，先去请求接口获取秒杀地址
+ * 接口改造，带上PathVariable参数
+ * 添加生成地址的接口
+ * 秒杀收到请求，先验证PathVariable
+  ```java
+  //miaoshaController中做的
+  
+  生成path路径给前台，并将生成的path存入到redis中
+  
+   public Result<String> getMiaoshaPath(HttpServletRequest request, MiaoshaUser user,
+      		@RequestParam("goodsId")long goodsId,
+      		) {
+      	if(user == null) {
+      		return Result.error(CodeMsg.SESSION_ERROR);
+      	}
+      	String path  =miaoshaService.createMiaoshaPath(user, goodsId);
+      	return Result.success(path);
+      }
+      //createMiaoshaPath方法
+      	public String createMiaoshaPath(MiaoshaUser user, long goodsId) {
+      		if(user == null || goodsId <=0) {
+      			return null;
+      		}
+      		String str = MD5Util.md5(UUIDUtil.uuid()+"123456");
+          	redisService.set(MiaoshaKey.getMiaoshaPath, ""+user.getId() + "_"+ goodsId, str);
+      		return str;
+      	}
+   //验证前台传过来的path值 重点关注path值的位置。
+    @RequestMapping(value="/{path}/do_miaosha", method=RequestMethod.POST)
+        @ResponseBody
+        public Result<Integer> miaosha(Model model,MiaoshaUser user,
+        		@RequestParam("goodsId")long goodsId,
+        		@PathVariable("path") String path) {
+        	model.addAttribute("user", user);
+        	if(user == null) {
+        		return Result.error(CodeMsg.SESSION_ERROR);
+        	}
+        	//验证path
+        	boolean check = miaoshaService.checkPath(user, goodsId, path);
+        	if(!check){
+        		return Result.error(CodeMsg.REQUEST_ILLEGAL);
+        	}
+    //地址的校验checkPath
+    public boolean checkPath(MiaoshaUser user, long goodsId, String path) {
+    		if(user == null || path == null) {
+    			return false;
+    		}
+    		String pathOld = redisService.get(MiaoshaKey.getMiaoshaPath, ""+user.getId() + "_"+ goodsId, String.class);
+    		return path.equals(pathOld);
+    	}
+  ```
+  #限流
+  ##普通方式
+  ##注解方式
+  
