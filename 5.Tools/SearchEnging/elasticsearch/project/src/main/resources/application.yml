@@ -1,0 +1,5 @@
+spring:
+  data:
+    elasticsearch:
+      cluster-nodes: 47.110.70.131:9300
+      cluster-name: elasticsearch
