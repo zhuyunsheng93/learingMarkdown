@@ -35,6 +35,7 @@ var vm = new Vue({
 * 入口
 * 输出
 * 加载器
+<<<<<<< HEAD
 * 插件  
 1、安装  
 npm install webpack --save-dev   开发时候用的，就安装到开发,打包的时候不会打到包里  
@@ -95,8 +96,6 @@ module.exports = {
 用来快速构建项目，不用自己一一添加前端依赖。  
 1、 npm install -g vue-cli  
 2、 vue init webpakck   (快速搭建一个webpack项目)
-
-
 
  
  

@@ -22,7 +22,7 @@ public String getUser(@RequestBody HashMap<String,String> map){
    String requestPram1 = map.get("paramName");
 }
 ```
-4、ModelAttribute的使用。
+4、@ModelAttribute,@RequestParam,@RequestBody,的使用。
 
 5、控制跨域问题 （cors跨域）
 写一个配置类，并且进行注册
