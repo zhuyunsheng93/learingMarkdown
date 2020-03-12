@@ -552,6 +552,9 @@ zuul:
 ```
 ##默认的路由规则
 当服务多的时候，上述的配置还是很繁琐，默认情况下，一切服务的映射路径就是服务名本身。例如服务名称为：user-service,则默认的映射路径就是：/user-service/**
+##忽略一些默认微服务的映射
+默认的路由规则，不自己配置映射路径的情况下，就会自动帮程序员添加，但是有些路径就是你不想暴露出去的，这时候怎么办，这时候就要使用`zuul.ignored-services:微服务名`或者是`zuul.ignoredPatterns:请求路径`
+如果在zuul.routes中自己进行配置后，那么这个忽略就不起作用了。
 ##路由前缀
 ```yaml
 zuul:
@@ -563,7 +566,9 @@ zuul:
 ```
 我们通过zuul.prefix=/api来指定了路由的前缀，这样在发起请求时，路径就要以/api开头。  
 
-路径/api/user-service/user/1将会被代理到/user-service/user/1
+路径/api/user-service/user/1将会被代理到/user-service/user/1  
+`Attention` 无形中让前台增加一个前缀让zuul去寻找指定的微服务。例子如下：  
+uplaod—service 在zuul中配置的为   upload-service    upload/**   upload-service中controller中
 
 ##过滤器ZuulFilter
 ZuulFilter是过滤器的顶级父类，下面是其中定义4个最重要的方法。
@@ -578,6 +583,48 @@ public abstract ZuulFilter implements IZuulFilter{
 
     Object run() throws ZuulException;// IZuulFilter
 }
-````
+````  
+
+- `shouldFilter`：返回一个`Boolean`值，判断该过滤器是否需要执行。返回true执行，返回false不执行。
+- `run`：过滤器的具体业务逻辑。
+- `filterType`：返回字符串，代表过滤器的类型。包含以下4种：
+  - `pre`：请求在被路由之前执行
+  - `routing`：在路由请求时调用
+  - `post`：在routing和errror过滤器之后调用
+  - `error`：处理请求时发生错误调用
+- `filterOrder`：通过返回的int值来定义过滤器的执行顺序，数字越小优先级越高。  
+### 过滤器执行生命周期      
+* 正常流程  
+   * 请求到达首先经过pre类型过滤器，然后达到routing类型，进行路由，请求就到达真正的服务提供者，执行请求，返回结果后，会到达post过滤器，然后返回响应。  
+* 异常流程  
+   * 整个过程中，pre或者routing过滤器出现异常，就会直接进入error过滤器，在error进行处理后，会将请求交给post过滤器，最后返回给用户。
+   * 如果是error过滤1器自己出现异常，最后也会进入Post过滤器，然后返回。
+   * 如果是POST过滤器出现异常，会跳转到error过滤器，但是于pre和routing不同的时，请求不会再到达Post过滤器。 
+ ### 使用场景
+ * 请求鉴权：一般放在pre类型，如果发现没有权限，直接就拦截。
+ * 异常处理：一般会在error类型和post类型过滤器中结合来处理。
+ * 服务调用时长统计：pre和post结合使用。 
+ ###负载均衡和熔断
+ Zuul中默认就已经集成了Ribbon负载均衡和Hystix熔断机制。但是所有的超时策略都是走的默认值，比如熔断超时时间只有1S，很容易就触发了。因此建议我们手动进行配置：
+ ```yaml
+zuul:
+  retryable: true
+ribbon:
+  ConnectTimeout: 250 # 连接超时时间(ms)
+  ReadTimeout: 2000 # 通信超时时间(ms)
+  OkToRetryOnAllOperations: true # 是否对所有操作重试
+  MaxAutoRetriesNextServer: 2 # 同一服务不同实例的重试次数
+  MaxAutoRetries: 1 # 同一实例的重试次数
+hystrix:
+  command:
+  	default:
+        execution:
+          isolation:
+            thread:
+              timeoutInMillisecond: 6000 # 熔断超时时长：6000ms
+```
+## zuul前台路径映射到具体的微服务
+* 
+ 
 
 

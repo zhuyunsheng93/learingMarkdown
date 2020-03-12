@@ -136,3 +136,71 @@ spring.datasource.druid.stat-view-servlet.allow=true
 1、登陆成功后，信息保存在session中，  
 2、token  
 3、JWT
+## 使用Navicat Premium 12连接MySQL数据库时会出现Authentication plugin 'caching_sha2_password' cannot be loaded的错误。
+* 原因：mysql8 之前的版本中加密规则是mysql_native_password,而在mysql8之后,加密规则是caching_sha2_password, 
+* 解决问题方法有两种,一种是升级navicat驱动,一种是把mysql用户登录密码加密规则还原成mysql_native_password. 
+`ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';`
+##解决跨域问题cors
+###ajax请求类型
+浏览器会将ajax请求分为两类，简单请求、特殊请求。对于不同的请求处理的方式也有差异
+* 简单请求
+  * 请求方法是下面三种之一
+    * HEAD
+    * GET
+    * POST
+  * HTTP的头信息不超过以下几种字段
+    * Accept
+    * Accept-Language
+    * Content-Language
+    * Last-Event-ID
+    * Content-Type 只限于三个值 application/x-www-form-urlencoded、multipart/form/data、text/html 
+    
+ 简单请求 浏览器就会在请求头中携带一个字段，origin 这个origin会指出当前的请求属于哪个域（协议+域名+端口）服务会根据这个值来决定是否允许其跨域
+ origin:http://manage.leyou.com
+ 如果服务器允许跨域，需要在返回的响应头中携带下面的信息。
+ ```
+Access-Control-Allow-Origin: http://manage.leyou.com
+Access-Control-Allow-Credentials: true
+Content-Type: text/html; charset=utf-8
+```
+* 如果想要操纵Cookies 需要满足三个条件
+  * 服务的响应头中需要携带Access-Control-Allow-Credentials为true
+  * 浏览器发起的ajax需要指定withCredentials为true
+  * 响应头中的Access-Control-Allow-Origin 不能为* 必须是指定的域名
+ ####复杂请求
+ 不符合简单请求条件的,就是复杂请求.例如put请求
+ >预检请求
+ 
+   特殊请求会在正式的通信之前,增加一次HTTP查询请求,成为""预检请求"(preLight)
+   
+   浏览器先询问服务器,当前网页所在的域名是否在服务器的许可名单之中,以及可以使用哪些HTTP动词和头信息字段,只有得到肯定答复,浏览器才会发送正式的XMLHttpRequest请求
+ 
+一个预检请求模板 
+```
+OPTIONS /cors HTTP/1.1
+Origin: http://manage.leyou.com
+Access-Control-Request-Method: PUT          //接下来会用到的请求方式，put
+Access-Control-Request-Headers: X-Custom-Header     //会额外用到的头信息
+Host: api.leyou.com
+Accept-Language: en-US
+Connection: keep-alive
+User-Agent: Mozilla/5.0...
+```
+服务对预检请求的回应（如果可跨域）
+```
+HTTP/1.1 200 OK
+Date: Mon, 01 Dec 2008 01:15:39 GMT
+Server: Apache/2.0.61 (Unix)
+Access-Control-Allow-Origin: http://manage.leyou.com
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Methods: GET, POST, PUT     //允许的访问方式
+Access-Control-Allow-Headers: X-Custom-Header    //允许携带的头
+Access-Control-Max-Age: 1728000                  //本次许可的有效时间长度，单位是秒 过期之前的ajax请求就无需再次进行预检
+Content-Type: text/html; charset=utf-8
+Content-Encoding: gzip
+Content-Length: 0
+Keep-Alive: timeout=2, max=100
+Connection: Keep-Alive
+Content-Type: text/plain
+```
+
