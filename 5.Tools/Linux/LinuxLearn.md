@@ -187,4 +187,106 @@ $ pkill nginx
  3. 设置开机自启动 `systemctl enable mariadb`
  4. 首次设置mysql `mysql_source_installation`
  5. ``
-
+#安装docker
+ 1. 安装Docker所需要的包 `yum remove docker \
+                                     docker-client \
+                                     docker-client-latest \
+                                     docker-common \
+                                     docker-latest \
+                                     docker-latest-logrotate \
+                                     docker-logrotate \
+                                     docker-engine`
+                                     
+ 2. 设置稳定的仓库 `yum-config-manager \
+                 --add-repo \
+                 https://download.docker.com/linux/centos/docker-ce.repo`
+ 
+ 3. 安装最新的docker引擎 `yum install docker-ce docker-ce-cli containerd.io`
+ 
+ 4. 启动docker `systemctl start docker`
+ 
+ 5. 查看docker的启动状态 `systemctl status docker`
+ 
+##docker安装elk
+ 1. 安装docker后，安装docker-compose `curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`
+ -如果下载速度很慢的话，可以通过浏览器上github直接下载，上传到服务器。
+ 2. 对下载的二进制文件赋权 `chmod +x /usr/local/bin/docker-compose`
+ 
+ 3. 创建link `ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose`
+ 
+ 4. 查看是否安装成功 `docker-compose -v`
+ 
+ 5. 一些准备工作
+    1.  Elasticsearch默认使用mmapfs目录来存储索引。操作系统默认的mmap计数太低可能导致内存不足，我们可以使用下面这条命令来增加内存：` sysctl -w vm.max_map_count=262144 `
+    2. 创建Elasticsearch数据挂载路径： `mkdir -p /febs/elasticsearch/data`
+    3. 对该路径进行赋权 `chmod 777 /febs/elasticsearch/data` 
+    4. 创建Elasticsearch插件挂载路径 `mkdir -p /febs/elasticsearch/plugins`
+    5. 创建Logstash配置文件存储路径 `mkdir -p /febs/logstash`
+    6. 在该路径下创建logstash-febs.conf配置文件 `vim /febs/logstash/logstash-febs.conf`
+        ```text
+                input {
+                  tcp {
+                    mode => "server"
+                    host => "0.0.0.0"
+                    port => 4560
+                    codec => json_lines
+                  }
+                }
+                output {
+                  elasticsearch {
+                    hosts => "es:9200"
+                    index => "febs-logstash-%{+YYYY.MM.dd}"
+                  }
+                }
+        
+        ```
+       
+    7. 创建ELK Docker Compose文件存储路径 `mkdir -p /febs/elk`
+    8. 在该目录下创建docker-compose.yml文件 `vim /febs/elk/docker-compose.yml` 内容如下：
+    
+       ```yaml
+        version: '3'
+        services:
+          elasticsearch:
+            image: elasticsearch:6.4.1
+            container_name: elasticsearch
+            environment:
+              - "cluster.name=elasticsearch" #集群名称为elasticsearch
+              - "discovery.type=single-node" #单节点启动
+              - "ES_JAVA_OPTS=-Xms512m -Xmx512m" #jvm内存分配为512MB
+            volumes:
+              - /febs/elasticsearch/plugins:/usr/share/elasticsearch/plugins
+              - /febs/elasticsearch/data:/usr/share/elasticsearch/data
+            ports:
+              - 9200:9200
+          kibana:
+            image: kibana:6.4.1
+            container_name: kibana
+            links:
+              - elasticsearch:es #配置elasticsearch域名为es
+            depends_on:
+              - elasticsearch
+            environment:
+              - "elasticsearch.hosts=http://es:9200" #因为上面配置了域名，所以这里可以简写为http://es:9200
+            ports:
+              - 5601:5601
+          logstash:
+            image: logstash:6.4.1
+            container_name: logstash
+            volumes:
+              - /febs/logstash/logstash-febs.conf:/usr/share/logstash/pipeline/logstash.conf
+            depends_on:
+              - elasticsearch
+            links:
+              - elasticsearch:es
+            ports:
+              - 4560:4560 ```
+ 6. 切换到/febs/elk 目录下，使用命令启动 `docker-compose up -d`  
+    1. 第一次启动时后，会拉取ELK的镜像，过程中可能出错。这是镜像网址太过老旧，应设置新的网址。在/etc/docker/目录下新建daemon.json，在里面输入
+        ```json
+        {
+            "registry-mirrors":["https://docker.mirrors.ustc.edu.cn"]
+        }
+        ```
+    2. 重启守护线程 `systemctl daemon-reload` `systemctl restart docker`
+    3. systemctl enable docker.service
