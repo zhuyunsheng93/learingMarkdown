@@ -1,2 +1,4 @@
 this is test1
 just test git reset HEAD 
+I LIKE SOME GIRL WHO IS VERY EXCELLENT。
+this is to test add 
