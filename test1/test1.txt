@@ -1,1 +1,2 @@
 this is test1
+just test git reset HEAD 
